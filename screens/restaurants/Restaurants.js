@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { Icon } from 'react-native-elements'
+import firebase from 'firebase/app'
 
 import Loading from '../../components/Loading'
-import { getCurrentUser } from '../../utils/actions'
 
-export default function Restaurants() {
+export default function Restaurants({ navigation }) {
     const [user, setUser] = useState(null)
 
     useEffect(() => {
-        setUser(getCurrentUser())
+        firebase.auth().onAuthStateChanged((userInfo) => {
+            userInfo ? setUser(true) : setUser(false)
+        })
     }, [])
 
     if (user === null) {
@@ -27,6 +29,7 @@ export default function Restaurants() {
                         color="#442484"
                         reverse
                         containerStyle={styles.btnContainer}
+                        onPress={() => navigation.navigate("add-restaurant")}
                     />
                 )
             }
