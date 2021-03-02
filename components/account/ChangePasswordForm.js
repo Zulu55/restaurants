@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { Button,Icon,Input } from 'react-native-elements'
+import { Button, Icon, Input } from 'react-native-elements'
 import { isEmpty, size } from 'lodash'
 
 import { reauthenticate, updatePassword } from '../../utils/actions'
