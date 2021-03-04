@@ -12,7 +12,11 @@ export default function AddRestaurant({ navigation }) {
 
     return (
         <KeyboardAwareScrollView>
-            <AddRestaurantForm toastRef={toastRef} setLoading={setLoading}/>
+            <AddRestaurantForm 
+                toastRef={toastRef} 
+                setLoading={setLoading}
+                navigation={navigation}
+            />
             <Loading isVisible={loading} text="Creando restarutante..."/>
             <Toast ref={toastRef} position="center" opacity={0.9}/>
         </KeyboardAwareScrollView>
