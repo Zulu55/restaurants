@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import { Alert, Dimensions, StyleSheet, Text, View, ScrollView } from 'react-native'
 import { Avatar, Button, Icon, Input, Image } from 'react-native-elements'
-import CountryPicker from 'react-native-country-picker-modal'
 import { map, size, filter, isEmpty } from 'lodash' 
+import CountryPicker from 'react-native-country-picker-modal'
 import MapView from 'react-native-maps'
+import uuid from 'random-uuid-v4'
 
 import { getCurrentLocation, loadImageFromGallery, validateEmail } from '../../utils/helpers'
+import { addDocumentWithoutId, getCurrentUser, uploadImage } from '../../utils/actions'
 import Modal from '../../components/Modal'
-import { uploadImage } from '../../utils/actions'
-import uuid from 'random-uuid-v4'
 
 const widthScreen = Dimensions.get("window").width
 
@@ -29,11 +29,30 @@ export default function AddRestaurantForm({ toastRef, setLoading, navigation }) 
         }
 
         setLoading(true)
-        const response = await uploadImages()
-        console.log(response)
+        const responseUploadImages = await uploadImages()
+        const restaurant = {
+            name: formData.name,
+            address: formData.address,
+            description: formData.description,
+            callingCode: formData.callingCode,
+            phone: formData.phone,
+            location: locationRestaurant,
+            images: responseUploadImages,
+            rating: 0,
+            ratingTotal: 0,
+            quantityVoting: 0,
+            createAt: new Date(),
+            createBy: getCurrentUser().uid
+        }
+        const responseAddDocument = await addDocumentWithoutId("restaurants", restaurant)
         setLoading(false)
 
-        console.log("Fuck yeahh!!!")
+        if (!responseAddDocument.statusResponse) {
+            toastRef.current.show("Error al grabar el restaurante, por favor intenta más tarde.", 3000)
+            return
+        }
+
+        navigation.navigate("restaurants")
     }
 
     const uploadImages = async() => {
