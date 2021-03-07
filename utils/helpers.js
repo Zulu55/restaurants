@@ -14,8 +14,8 @@ export const loadImageFromGallery = async(array) => {
     if (resultPermissions.status === "denied") {
         Alert.alert("Debes de darle permiso para accerder a las imágenes del teléfono.")
         return response
-    }
-    const result = await ImagePicker.launchImageLibraryAsync({
+    }   
+    const result = await ImagePicker.launchImageLibraryAsync({      
         allowsEditing: true,
         aspect: array
     })
