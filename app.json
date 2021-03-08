@@ -17,12 +17,19 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.zulu.restaurants"
     },
     "android": {
+      "package": "com.zulu.restaurants",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
+      },
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAiSV22B_JwDGoxCNf6VWFMCelxGwmgTJs"
+        }
       },
       "permissions": [
         "CAMERA_ROLL",
