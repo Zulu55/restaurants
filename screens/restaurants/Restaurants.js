@@ -1,18 +1,39 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { Icon } from 'react-native-elements'
+import { useFocusEffect } from '@react-navigation/native'
 import firebase from 'firebase/app'
 
 import Loading from '../../components/Loading'
+import { getRestaurants } from '../../utils/actions'
 
 export default function Restaurants({ navigation }) {
     const [user, setUser] = useState(null)
+    const [startRestaurant, setStartRestaurant] = useState(null)
+    const [restaurants, setRestaurants] = useState([])
+    const [loading, setLoading] = useState(false)
+
+    const limitRestaurants = 7
+    console.log("restaurants", restaurants)
 
     useEffect(() => {
         firebase.auth().onAuthStateChanged((userInfo) => {
             userInfo ? setUser(true) : setUser(false)
         })
     }, [])
+
+
+    useFocusEffect(
+        useCallback(async() => {
+            setLoading(true)
+            const response = await getRestaurants(limitRestaurants)
+            if (response.statusResponse) {
+                setStartRestaurant(response.startRestaurant)
+                setRestaurants(response.restaurants)
+            }
+            setLoading(false)
+        }, [])
+    )
 
     if (user === null) {
         return <Loading isVisible={true} text="Cargando..."/>
@@ -33,6 +54,7 @@ export default function Restaurants({ navigation }) {
                     />
                 )
             }
+            <Loading isVisible={loading} text="Cargando restaurantes..."/>
         </View>
     )
 }
