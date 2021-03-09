@@ -9,6 +9,7 @@ import Loading from '../../components/Loading'
 import ListRestaurants from '../../components/restaurants/ListRestaurants'
 import { getMoreRestaurants, getRestaurants } from '../../utils/actions'
 
+
 export default function Restaurants({ navigation }) {
     const [user, setUser] = useState(null)
     const [startRestaurant, setStartRestaurant] = useState(null)

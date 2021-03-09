@@ -23,6 +23,7 @@ export default function AddRestaurantForm({ toastRef, setLoading, navigation }) 
     const [isVisibleMap, setIsVisibleMap] = useState(false)
     const [locationRestaurant, setLocationRestaurant] = useState(null)
 
+    console.log("widthScreen",widthScreen)
     const addRestaurant = async() => {
         if (!validForm()) {
             return
