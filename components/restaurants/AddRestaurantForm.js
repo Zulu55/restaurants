@@ -6,7 +6,7 @@ import CountryPicker from 'react-native-country-picker-modal'
 import MapView from 'react-native-maps'
 import uuid from 'random-uuid-v4'
 
-import { getCurrentLocation, loadImageFromGallery, validateEmail } from '../../utils/helpers'
+import { formatPhone, getCurrentLocation, loadImageFromGallery, validateEmail } from '../../utils/helpers'
 import { addDocumentWithoutId, getCurrentUser, uploadImage } from '../../utils/actions'
 import Modal from '../../components/Modal'
 
@@ -23,7 +23,6 @@ export default function AddRestaurantForm({ toastRef, setLoading, navigation }) 
     const [isVisibleMap, setIsVisibleMap] = useState(false)
     const [locationRestaurant, setLocationRestaurant] = useState(null)
 
-    console.log("widthScreen",widthScreen)
     const addRestaurant = async() => {
         if (!validForm()) {
             return
@@ -38,6 +37,7 @@ export default function AddRestaurantForm({ toastRef, setLoading, navigation }) 
             callingCode: formData.callingCode,
             phone: formData.phone,
             location: locationRestaurant,
+            email: formData.email,
             images: responseUploadImages,
             rating: 0,
             ratingTotal: 0,
