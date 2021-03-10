@@ -115,8 +115,6 @@ function TitleRestaurant({ name, description, rating }) {
     )
 }
 
-
-
 const styles = StyleSheet.create({
     viewBody: {
         flex: 1,
