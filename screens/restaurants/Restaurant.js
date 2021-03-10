@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useCallback } from 'react'
 import { View } from 'react-native'
 import { Alert, Dimensions, StyleSheet, Text, ScrollView } from 'react-native'
 import { ListItem, Rating, Icon } from 'react-native-elements'
 import { map } from 'lodash'
+import { useFocusEffect } from '@react-navigation/native'
 
 import CarouselImages from '../../components/CarouselImages'
 import Loading from '../../components/Loading'
 import MapRestaurant from '../../components/restaurants/MapRestaurant'
+import ListReviews from '../../components/restaurants/ListReviews'
 import { getDocumentById } from '../../utils/actions'
 import { formatPhone } from '../../utils/helpers'
 
@@ -18,18 +20,20 @@ export default function Restaurant({ navigation, route }) {
     const [activeSlide, setActiveSlide] = useState(0)
 
     navigation.setOptions({ title: name })
-    
-    useEffect(() => {
-        (async() => {
-            const response = await getDocumentById("restaurants", id)
-            if (response.statusResponse) {
-                setRestaurant(response.document)
-            } else {
-                setRestaurant({})
-                Alert.alert("Ocurrió un problema cargando el restaurante, intente más tarde.")
-            }
-        })()
-    }, [])
+
+    useFocusEffect(
+        useCallback(() => {
+            (async() => {
+                const response = await getDocumentById("restaurants", id)
+                if (response.statusResponse) {
+                    setRestaurant(response.document)
+                } else {
+                    setRestaurant({})
+                    Alert.alert("Ocurrió un problema cargando el restaurante, intente más tarde.")
+                }
+            })()
+        }, [])
+    )
 
     if (!restaurant) {
         return <Loading isVisible={true} text="Cargando..."/>
@@ -55,6 +59,10 @@ export default function Restaurant({ navigation, route }) {
                 address={restaurant.address}
                 email={restaurant.email}
                 phone={formatPhone(restaurant.callingCode, restaurant.phone)}
+            />
+            <ListReviews
+                navigation={navigation}
+                idRestaurant={restaurant.id}
             />
         </ScrollView>
     )
