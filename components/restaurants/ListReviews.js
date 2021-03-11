@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useCallback } from 'react'
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
 import firebase from 'firebase/app'
 import { Avatar, Button, Rating } from 'react-native-elements'
 import moment from 'moment/min/moment-with-locales'
 import { getRestaurantReviews } from '../../utils/actions'
-import { size } from 'lodash'
+import { map, size } from 'lodash'
+import { useFocusEffect } from '@react-navigation/native'
 
 moment.locale("es")
 
@@ -16,14 +17,16 @@ export default function ListReviews({ navigation, idRestaurant }) {
         user ? setUserLogged(true) : setUserLogged(false)
     })
 
-    useEffect(() => {
-        (async() => {
-            const response = await getRestaurantReviews(idRestaurant)
-            if (response.statusResponse) {
-                setReviews(response.reviews)
-            }
-        })()
-    }, [])
+    useFocusEffect(
+        useCallback(() => {
+            (async() => {
+                const response = await getRestaurantReviews(idRestaurant)
+                if (response.statusResponse) {
+                    setReviews(response.reviews)
+                }
+            })()
+        }, [])
+    )
 
     return (
         <View>
@@ -54,8 +57,8 @@ export default function ListReviews({ navigation, idRestaurant }) {
             }
             {
                 size(reviews) > 0 && (
-                    map(reviews, (review, index) => (
-                        <Review key={index} review={review}/>
+                    map(reviews, reviewDocument => (
+                        <Review reviewDocument={reviewDocument}/>
                     ))
                 )
             }
@@ -63,8 +66,8 @@ export default function ListReviews({ navigation, idRestaurant }) {
     )
 }
 
-function Review({ key, review }) {
-    const { title, review, createAt, avatarUser, rating } = review 
+function Review({ reviewDocument }) {
+    const { title, review, createAt, avatarUser, rating } = reviewDocument 
     const createReview = new Date(createAt.seconds * 10000)
 
     return (

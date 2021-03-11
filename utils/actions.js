@@ -194,7 +194,6 @@ export const getRestaurantReviews = async(id) => {
     try {
         const response = await db
             .collection("reviews")
-            .orderBy("createAt", "desc")
             .where("idRestaurant", "==", id)
             .get()
         response.forEach((doc) => {
@@ -207,4 +206,22 @@ export const getRestaurantReviews = async(id) => {
         result.error = error
     }
     return result
+}
+
+export const getIsFavorite = async(idRestaurant) => {
+    const result = { statusResponse: true, error: null, isFavorite: false }
+    try {
+        const response = await db
+            .collection("favorites")
+            .where("idRestaurant", "==", idRestaurant)
+            .where("idUser", "==", getCurrentUser().uid)
+            .get()
+        result.isFavorite = response.docs.length > 0
+    } catch (error) {
+        console.log(error)
+        result.statusResponse = false
+        result.error = error
+    }
+    console.log(result)
+    return result     
 }
