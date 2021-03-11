@@ -218,10 +218,27 @@ export const getIsFavorite = async(idRestaurant) => {
             .get()
         result.isFavorite = response.docs.length > 0
     } catch (error) {
-        console.log(error)
         result.statusResponse = false
         result.error = error
     }
-    console.log(result)
+    return result     
+}
+
+export const deleteFavorite = async(idRestaurant) => {
+    const result = { statusResponse: true, error: null }
+    try {
+        const response = await db
+            .collection("favorites")
+            .where("idRestaurant", "==", idRestaurant)
+            .where("idUser", "==", getCurrentUser().uid)
+            .get()
+        response.forEach(async(doc) => {
+            const favoriteId = doc.id
+            await db.collection("favorites").doc(favoriteId).delete()
+        })    
+    } catch (error) {
+        result.statusResponse = false
+        result.error = error
+    }
     return result     
 }

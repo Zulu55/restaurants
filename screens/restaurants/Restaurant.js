@@ -11,7 +11,7 @@ import CarouselImages from '../../components/CarouselImages'
 import Loading from '../../components/Loading'
 import MapRestaurant from '../../components/restaurants/MapRestaurant'
 import ListReviews from '../../components/restaurants/ListReviews'
-import { addDocumentWithoutId, getCurrentUser, getDocumentById, getIsFavorite } from '../../utils/actions'
+import { addDocumentWithoutId, getCurrentUser, getDocumentById, getIsFavorite, deleteFavorite } from '../../utils/actions'
 import { formatPhone } from '../../utils/helpers'
 
 const widthScreen = Dimensions.get("window").width
@@ -35,28 +35,25 @@ export default function Restaurant({ navigation, route }) {
     useFocusEffect(
         useCallback(() => {
             (async() => {
-                const response1 = await getDocumentById("restaurants", id)
-                if (response1.statusResponse) {
-                    setRestaurant(response1.document)
+                const response = await getDocumentById("restaurants", id)
+                if (response.statusResponse) {
+                    setRestaurant(response.document)
                 } else {
                     setRestaurant({})
                     Alert.alert("Ocurrió un problema cargando el restaurante, intente más tarde.")
                 }
-
-                const response2 = await getIsFavorite(restaurant.id)
-                response2.statusResponse && setIsFavorite(response2.isFavorite)
             })()
         }, [])
     )
 
-    // useEffect(() => {
-    //     (async() => {
-    //         if (userLogged && restaurant) {
-    //             const response = await getIsFavorite(restaurant.id)
-    //             response.statusResponse && setIsFavorite(response.isFavorite)
-    //         }
-    //     })()
-    // }, [])
+    useEffect(() => {
+        (async() => {
+            if (userLogged && restaurant) {
+                const response = await getIsFavorite(restaurant.id)
+                response.statusResponse && setIsFavorite(response.isFavorite)
+            }
+        })()
+    }, [userLogged, restaurant])
 
     const addFavorite = async() => {
         if (!userLogged) {
@@ -74,12 +71,21 @@ export default function Restaurant({ navigation, route }) {
             setIsFavorite(true)
             toastRef.current.show("Restaurante añadido a favoritos.", 3000)
         } else {
-            toastRef.current.show("No se pudo adicionar el restaurante a fovoritos. Por favor intenta más tarde.", 3000)
+            toastRef.current.show("No se pudo adicionar el restaurante a favoritos. Por favor intenta más tarde.", 3000)
         }
     }
 
-    const removeFavorite = () => {
-        console.log("Remove Favorite")
+    const removeFavorite = async() => {
+        setLoading(true)
+        const response = await deleteFavorite(restaurant.id)
+        setLoading(false)
+
+        if (response.statusResponse) {
+            setIsFavorite(false)
+            toastRef.current.show("Restaurante eliminado de favoritos.", 3000)
+        } else {
+            toastRef.current.show("No se pudo eliminar el restaurante de favoritos. Por favor intenta más tarde.", 3000)
+        }
     }
 
     if (!restaurant) {
