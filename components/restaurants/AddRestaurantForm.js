@@ -62,7 +62,7 @@ export default function AddRestaurantForm({ toastRef, setLoading, navigation }) 
             map(imagesSelected, async(image) => {
                 const response = await uploadImage(image, "restaurants", uuid())
                 if (response.statusResponse) {
-                    imagesUrl.push(response.url)
+                   imagesUrl.push(response.url)
                 }
             })
         )
