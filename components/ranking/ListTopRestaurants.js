@@ -30,7 +30,7 @@ function Restaurant({ restaurant, navigation }) {
 
     return (
         <TouchableOpacity
-            onPress={() => navigation.navigate("restaurant", {
+            onPress={() => navigation.navigate("restaurants", {
                 screen: "restaurant",
                 params: { id, name }
             })}
@@ -49,7 +49,7 @@ function Restaurant({ restaurant, navigation }) {
                     PlaceholderContent={<ActivityIndicator size="large" color="#FFF"/> }
                     source={{ uri: images[0] }}
                 />
-                <View styles={styles.titleRating}>
+                <View style={styles.titleRating}>
                     <Text style={styles.title}>{name}</Text>
                     <Rating
                         imageSize={20}
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     },
     titleRating: {
         flexDirection: "row",
-        marginTop: 10,
+        marginVertical: 10,
         justifyContent: "space-between"
     }
 })
