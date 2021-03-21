@@ -172,7 +172,7 @@ function MapRestaurant({ isVisibleMap, setIsVisibleMap, setLocationRestaurant, t
     }
 
     return (
-        <Modal isVisible={isVisibleMap} setIsVisible={setIsVisibleMap}>
+        <Modal isVisible={isVisibleMap} setVisible={setIsVisibleMap}>
             <View>
                 {
                     newRegion && (
