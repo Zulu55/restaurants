@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react'
 import { View } from 'react-native'
 import { Alert, Dimensions, StyleSheet, Text, ScrollView } from 'react-native'
-import { ListItem, Rating, Icon } from 'react-native-elements'
+import { ListItem, Rating, Icon, Input, Button } from 'react-native-elements'
 import { map } from 'lodash'
 import { useFocusEffect } from '@react-navigation/native'
 import firebase from 'firebase/app'
@@ -11,8 +11,17 @@ import CarouselImages from '../../components/CarouselImages'
 import Loading from '../../components/Loading'
 import MapRestaurant from '../../components/restaurants/MapRestaurant'
 import ListReviews from '../../components/restaurants/ListReviews'
-import { addDocumentWithoutId, getCurrentUser, getDocumentById, getIsFavorite, deleteFavorite } from '../../utils/actions'
+import { 
+    addDocumentWithoutId, 
+    getCurrentUser, 
+    getDocumentById, 
+    getIsFavorite, 
+    deleteFavorite, 
+    sendPushNotification, 
+    setNotificationMessage 
+} from '../../utils/actions'
 import { callNumber, formatPhone, sendEmail, sendWhatsApp } from '../../utils/helpers'
+import { Modal } from '../../components/Modal'
 
 const widthScreen = Dimensions.get("window").width
 
@@ -26,6 +35,7 @@ export default function Restaurant({ navigation, route }) {
     const [userLogged, setUserLogged] = useState(false)
     const [currentUser, setCurrentUser] = useState(null)
     const [loading, setLoading] = useState(false)
+    const [modalNotification, setModalNotification] = useState(false)
 
     firebase.auth().onAuthStateChanged(user => {
         user ? setUserLogged(true) : setUserLogged(false)
@@ -127,10 +137,18 @@ export default function Restaurant({ navigation, route }) {
                 currentUser={currentUser}
                 callingCode={restaurant.callingCode}
                 phoneNoFormat={restaurant.phone}
+                setLoading={setLoading}
+                setModalNotification={setModalNotification}
             />
             <ListReviews
                 navigation={navigation}
                 idRestaurant={restaurant.id}
+            />
+            <SendMessage
+                modalNotification={modalNotification}
+                setModalNotification={setModalNotification}
+                setLoading={setLoading}
+                restaurant={restaurant}
             />
             <Toast ref={toastRef} position="center" opacity={0.9}/>
             <Loading isVisible={loading} text="Por favor espere..."/>
@@ -138,9 +156,86 @@ export default function Restaurant({ navigation, route }) {
     )
 }
 
-function RestaurantInfo({ name, location, address, email, phone, currentUser, callingCode, phoneNoFormat}) {
+function SendMessage ({ modalNotification, setModalNotification, setLoading, restaurant }) {
+    const [title, setTitle] = useState(null)
+    const [errorTitle, setErrorTitle] = useState(null)
+    const [message, setMessage] = useState(null)
+    const [errorMessage, setErrorMessage] = useState(null)
+
+    const sendNotification = async() => {
+        setLoading(true)
+        const resultToken = await getDocumentById("users", getCurrentUser().uid)
+        if (!resultToken.statusResponse) {
+            setLoading(false)
+            Alert.alert("No se pudo obtener el token del usuario.")
+            return
+        }
+
+        const messageNotification = setNotificationMessage(
+            resultToken.document.token,
+            `Titulo de prueba`,
+            `Mensaje de prueba`,
+            { data: `Data de prueba`}
+        )
+
+        const response = await sendPushNotification(messageNotification)
+        setLoading(false)
+
+        if (response) {
+            Alert.alert("Se ha enviado el mensaje.")
+        } else {
+            Alert.alert("Ocurrió un problema enviando el mensaje.")
+        }
+    }
+
+    return (
+        <Modal
+            isVisible={modalNotification}
+            setVisible={setModalNotification}
+        >
+            <View style={styles.modalContainer}>
+                <Text style={styles.textModal}>
+                    Envíaale un mensaje a los amantes de {restaurant.name}
+                </Text>
+                <Input
+                    placeholder="Título del mensaje..."
+                    onChangeText={(text) => setTitle(text)}
+                    value={title}
+                    errorMessage={errorTitle}
+                />
+                <Input
+                    placeholder="Mensaje..."
+                    multiline
+                    inputStyle={styles.textArea}
+                    onChangeText={(text) => setMessage(text)}
+                    value={message}
+                    errorMessage={errorMessage}
+                />
+                <Button
+                    title="Enviar Mensaje"
+                    buttonStyle={styles.btnSend}
+                    containerStyle={styles.btnSendContainer}
+                    onPress={sendNotification}
+                />
+            </View>
+        </Modal>
+    )
+}
+
+function RestaurantInfo({ 
+    name, 
+    location, 
+    address, 
+    email, 
+    phone, 
+    currentUser, 
+    callingCode, 
+    phoneNoFormat, 
+    setLoading,
+    setModalNotification 
+}) {
     const listInfo = [
-        { type: "addres", text: address, iconLeft: "map-marker" },
+        { type: "addres", text: address, iconLeft: "map-marker", iconRight: "message-text-outline" },
         { type: "phone", text: phone, iconLeft: "phone", iconRight: "whatsapp" },
         { type: "email", text: email, iconLeft: "at" },
     ]
@@ -164,6 +259,8 @@ function RestaurantInfo({ name, location, address, email, phone, currentUser, ca
             } else {
                 sendWhatsApp(`${callingCode} ${phoneNoFormat}`, `Estoy interesado en sus servicios`)
             }
+        } else if (type == "addres") {
+            setModalNotification(true)
         }
     }
 
@@ -270,5 +367,24 @@ const styles = StyleSheet.create({
         borderBottomLeftRadius: 100,
         padding: 5,
         paddingLeft: 15
+    },
+    textArea: {
+        height: 50,
+        paddingHorizontal: 10
+    },
+    btnSend: {
+        backgroundColor: "#442848"
+    },
+    btnSendContainer: {
+        width: "95%"
+    },
+    textModal: {
+        color: "#000",
+        fontSize: 16,
+        fontWeight: "bold"
+    },
+    modalContainer: {
+        justifyContent: "center",
+        alignItems: "center"
     }
 })
