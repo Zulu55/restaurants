@@ -394,3 +394,22 @@ export const setNotificationMessage = (token, title, body, data) => {
     return message
 }
  
+export const getUsersFavorite = async(restaurantId) => {
+    const result = { statusResponse: true, error: null, users: [] }
+    try {
+        const response = await db.collection("favorites").where("idRestaurant", "==", restaurantId).get()
+        await Promise.all(
+            map(response.docs, async(doc) => {
+                const favorite = doc.data()
+                const user = await getDocumentById("users", favorite.idUser)
+                if (user.statusResponse) {
+                    result.users.push(user.document)
+                }
+            })
+        )
+    } catch (error) {
+        result.statusResponse = false
+        result.error = error
+    }
+    return result
+}
