@@ -15,6 +15,7 @@
     "@react-navigation/stack": "^5.14.2",
     "expo": "~40.0.0",
     "expo-constants": "~9.3.3",
+    "expo-google-sign-in": "~8.4.0",
     "expo-image-picker": "~9.2.0",
     "expo-location": "~10.0.0",
     "expo-notifications": "~0.8.2",

@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "763173616565",
+    "project_id": "restaurants-8bad5",
+    "storage_bucket": "restaurants-8bad5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:763173616565:android:923af0d28f3d6968d3b7fc",
+        "android_client_info": {
+          "package_name": "com.zulu.restaurants"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "763173616565-3pjsn21ui69s371eter78lrq0muis5o3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAiSV22B_JwDGoxCNf6VWFMCelxGwmgTJs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "763173616565-3pjsn21ui69s371eter78lrq0muis5o3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "763173616565-8o5vocujlak8lsu9i1menfa11a4eq8am.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.zulu.restaurants"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
